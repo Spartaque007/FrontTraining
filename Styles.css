@@ -1,0 +1,94 @@
+    body {
+        margin: 0;
+        line-height: 1.5;
+        font-size: 1rem;
+    }
+    
+    .nav {
+        margin: 0;
+        padding: 0;
+        background-color: #333;
+        list-style-type: none;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+    
+    .nav li {
+        float: left;
+    }
+    
+    .nav li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    
+    .nav li :hover {
+        background-color: midnightblue;
+    }
+    
+    .container {
+        margin-top: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 70%;
+    }
+    
+    .container-element {
+        margin: 5px;
+        float: left;
+        clear: right;
+    }
+    
+    .btn-primary {
+        display: inline-block;
+        border-style: none;
+        border-radius: .25rem;
+        padding: .375rem, .75rem;
+        font-size: 1rem;
+        height: 40px;
+        text-align: center;
+    }
+    
+    .btn-green {
+        color: white;
+        background-color: rgb(69, 134, 3);
+    }
+    
+    .btn-red {
+        color: white;
+        background-color: rgb(182, 17, 17);
+    }
+    
+    .btn-blue {
+        background-color: rgb(88, 88, 238);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        color: peachpuff;
+    }
+    
+    .pos-right {
+        float: right;
+    }
+    
+    .input-element {
+        width: 100%;
+        height: 40px;
+        font-size: 15px;
+        border-radius: .25rem;
+        border-width: 1px;
+        border-style: solid;
+    }
+    
+    .form-group-4 {
+        padding: 3px;
+        max-width: 25%;
+        float: left;
+    }
