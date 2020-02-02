@@ -33,10 +33,12 @@
     }
     
     .container {
-        margin-top: 10px;
-        margin-left: auto;
-        margin-right: auto;
-        width: 70%;
+        padding: 10px 10px;
+        max-width: 1080px;
+    }
+    
+    .actions {
+        width: 100%;
     }
     
     .container-element {
@@ -87,8 +89,60 @@
         border-style: solid;
     }
     
-    .form-group-4 {
-        padding: 3px;
-        max-width: 25%;
-        float: left;
+    .filter-group {
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+    }
+    
+    .filter {
+        margin: 5px 10px;
+        width: 25%;
+        flex-grow: 1
+    }
+    
+    .filter select {
+        height: 40px;
+        border: solid, 1px;
+        border-color: dimgray;
+    }
+    
+    .filter input {
+        height: 38px;
+        border: solid, 1px;
+        border-color: dimgray;
+        padding: 0 3px;
+    }
+    
+    .tables-group {
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+    }
+    
+    .table {
+        margin: 10px;
+        display: table;
+        border-collapse: separate;
+        border-spacing: 2px;
+        border-color: grey;
+    }
+    
+    .main-table {}
+    
+    .primary-table {}
+    
+    .table-header {}
+    
+    @media only screen and (max-width: 768px) {
+        .container {
+            max-width: 768px;
+        }
+        .filter-group {
+            flex-direction: column;
+        }
+        .filter {
+            width: 100%;
+            margin: 0;
+        }
     }
