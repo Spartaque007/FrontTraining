@@ -1,148 +1,220 @@
-    body {
-        margin: 0;
-        line-height: 1.5;
-        font-size: 1rem;
-    }
-    
-    .nav {
-        margin: 0;
-        padding: 0;
-        background-color: #333;
-        list-style-type: none;
-        overflow: hidden;
-        top: 0;
-        left: 0;
-        width: 100%;
-    }
-    
-    .nav li {
-        float: left;
-    }
-    
-    .nav li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    
-    .nav li :hover {
-        background-color: midnightblue;
-    }
-    
+body {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+.nav {
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    list-style-type: none;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.nav li {
+    float: left;
+}
+
+.nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.nav li :hover {
+    background-color: midnightblue;
+}
+
+.container {
+    padding: 10px 10px;
+    max-width: 1080px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.actions {
+    width: 100%;
+}
+
+.container-element {
+    margin: 5px;
+    float: left;
+    clear: right;
+}
+
+.btn-primary {
+    display: inline-block;
+    border-style: none;
+    border-radius: .25rem;
+    padding: .375rem, .75rem;
+    font-size: 1rem;
+    height: 40px;
+    text-align: center;
+}
+
+.btn-green {
+    color: white;
+    background-color: rgb(69, 134, 3);
+}
+
+.btn-red {
+    color: white;
+    background-color: rgb(182, 17, 17);
+}
+
+.btn-blue {
+    background-color: rgb(88, 88, 238);
+    color: white;
+}
+
+.btn-primary:hover {
+    color: peachpuff;
+}
+
+.pos-right {
+    float: right;
+}
+
+input:focus,
+select:focus {
+    box-shadow: 5px 3px 4px 2px blue;
+}
+
+.input-element {
+    width: 100%;
+    height: 40px;
+    font-size: 15px;
+    border-radius: .25rem;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.filter-group {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+}
+
+.filter {
+    margin: 5px 10px;
+    width: 25%;
+    flex-grow: 1
+}
+
+.filter select {
+    height: 40px;
+    border: solid, 1px;
+    border-color: dimgray;
+}
+
+.filter input {
+    height: 38px;
+    border: solid, 1px;
+    border-color: dimgray;
+    padding: 0 3px;
+}
+
+.tables-group {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+}
+
+.table {
+    font-size: 1rem;
+    line-height: 2rem;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    margin: 10px 5px;
+    border-spacing: 2px;
+    border-width: 1px 0px 1px;
+    flex-grow: 1;
+    display: table;
+    border-collapse: collapse;
+}
+
+th {
+    padding: 5px;
+    border-width: 1px 0px;
+    border-style: solid;
+    border-color: #dee2e6;
+}
+
+tr {
+    padding: 5px;
+    border-top: 1px solid #dee2e6;
+}
+
+.slave-table tr :first-child {
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: dee2e6;
+}
+
+.table td,
+.table th {
+    padding: .75rem;
+    vertical-align: top;
+}
+
+.main-table {
+    width: 60%;
+}
+
+.slave-table {
+    width: 40%;
+    position: sticky;
+    top: 90px;
+}
+
+table.autonumber {
+    counter-reset: rowNumber;
+}
+
+table.autonumber tbody tr {
+    counter-increment: rowNumber;
+}
+
+table.autonumber tbody tr td:first-child::before {
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+
+@media only screen and (max-width: 768px) {
     .container {
-        padding: 10px 10px;
-        max-width: 1080px;
+        max-width: 768px;
     }
-    
-    .actions {
-        width: 100%;
-    }
-    
-    .container-element {
-        margin: 5px;
-        float: left;
-        clear: right;
-    }
-    
-    .btn-primary {
-        display: inline-block;
-        border-style: none;
-        border-radius: .25rem;
-        padding: .375rem, .75rem;
-        font-size: 1rem;
-        height: 40px;
-        text-align: center;
-    }
-    
-    .btn-green {
-        color: white;
-        background-color: rgb(69, 134, 3);
-    }
-    
-    .btn-red {
-        color: white;
-        background-color: rgb(182, 17, 17);
-    }
-    
-    .btn-blue {
-        background-color: rgb(88, 88, 238);
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        color: peachpuff;
-    }
-    
-    .pos-right {
-        float: right;
-    }
-    
-    .input-element {
-        width: 100%;
-        height: 40px;
-        font-size: 15px;
-        border-radius: .25rem;
-        border-width: 1px;
-        border-style: solid;
-    }
-    
     .filter-group {
-        width: 100%;
-        display: flex;
-        align-items: stretch;
+        flex-direction: column;
     }
-    
     .filter {
-        margin: 5px 10px;
-        width: 25%;
-        flex-grow: 1
-    }
-    
-    .filter select {
-        height: 40px;
-        border: solid, 1px;
-        border-color: dimgray;
-    }
-    
-    .filter input {
-        height: 38px;
-        border: solid, 1px;
-        border-color: dimgray;
-        padding: 0 3px;
-    }
-    
-    .tables-group {
         width: 100%;
-        display: flex;
-        align-items: stretch;
+        margin: 0;
     }
-    
+    .input-element {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    .tables-group {
+        flex-direction: column;
+    }
     .table {
-        margin: 10px;
-        display: table;
-        border-collapse: separate;
-        border-spacing: 2px;
-        border-color: grey;
+        width: 100%;
+        margin: 10px 0px;
     }
-    
-    .main-table {}
-    
-    .primary-table {}
-    
-    .table-header {}
-    
-    @media only screen and (max-width: 768px) {
-        .container {
-            max-width: 768px;
-        }
-        .filter-group {
-            flex-direction: column;
-        }
-        .filter {
-            width: 100%;
-            margin: 0;
-        }
-    }
+}
