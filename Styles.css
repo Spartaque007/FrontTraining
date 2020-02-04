@@ -180,15 +180,15 @@ tr:hover {
     top: 90px;
 }
 
-table.autonumber {
+.autonumber {
     counter-reset: rowNumber;
 }
 
-table.autonumber tbody tr {
+.autonumber tbody tr {
     counter-increment: rowNumber;
 }
 
-table.autonumber tbody tr td:first-child::before {
+.autonumber tbody tr td:first-child::before {
     content: counter(rowNumber);
     min-width: 1em;
     margin-right: 0.5em;

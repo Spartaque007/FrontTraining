@@ -1,9 +1,15 @@
-<!DOCTYPE htmk>
+<!DOCTYPE html>
 <html>
 
 <head>
     <title>Lyceum</title>
+    <meta charset="UTF-8" />
     <link href="Styles.css" rel="stylesheet">
+    <script src="jquery-3.4.1.min.js" type="text/javascript"></script>
+    <script src="Scripts.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(InitPage);
+    </script>
 </head>
 
 <body>
@@ -34,13 +40,8 @@
             </div>
             <div class="filter">
                 <label>Корпус</label>
-                <select class="input-element">
-                    <option>Главный корпус БГУ</option>
-                    <option>Физический факультет БГУ</option>
-                    <option>Географический факультет БГУ</option>
-                    <option>Химический факультет БГУ</option>
-                    <option>Юридический факультет БГУ</option>
-                    <option>Факультет международных отношений БГУ</option>
+                <select id="BuildingsSelect" class="input-element">
+                   
                 </select>
             </div >
             <div class="filter">
