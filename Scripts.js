@@ -66,7 +66,9 @@ function auditoriesRefresh(selProfileId) {
 }
 
 function fillStudentsTable(students) {
-    let tableBody = $("#StudentsTable").find("tbody");
+    let tableBody = $("#StudentsTable").find("tbody").empty();
+
+
     $.each(students, function(key, value) {
         tableBody.append(`<tr>+
             <td>${++key}</td>
@@ -86,13 +88,16 @@ function createUUID() {
     });
 }
 
-function sortTableByColumn(colNumber) {
-    window.currentsortindex = colNumber;
-    var rows = $("#StudentsTable tbody").children('tr');
-    rows.sort(function(a, b) {
-        if (a.cells[colNumber].innerText > b.cells[colNumber].innerText) return 1;
-        if (a.cells[colNumber].innerText == b.cells[colNumber].innerText) return 0;
-        if (a.cells[colNumber].innerText < b.cells[colNumber].innerText) return -1;
+function sortTableByColumn(parameter) {
+
+    students.sort(function(a, b) {
+        let tmpValA = a[parameter];
+        let tmpValB = b[parameter];
+
+        if (tmpValA > tmpValB) return 1;
+        if (tmpValA == tmpValB) return 0;
+        if (tmpValA < tmpValB) return -1;
     });
-    fillStudentsTable(rows);
+    fillStudentsTable(students);
+
 }
