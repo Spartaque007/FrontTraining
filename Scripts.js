@@ -1,13 +1,22 @@
+$(document).ready(initPage);
+
+
 function initPage() {
     $.getJSON("http://localhost:8080/Buildings.json",
         function(value) {
+            window.buildings = value;
             buildingsRefresh(value);
-            profileRefresh();
+            profilesRefresh();
             auditoriesRefresh();
+        });
+    $.getJSON("http://localhost:8080/Students.json",
+        function(value) {
+            window.students = value;
+            fillStudentsTable(value);
         });
 
     $("#BuildingsSelect").on('change', function() {
-        profileRefresh(this.value);
+        profilesRefresh(this.value);
         auditoriesRefresh();
     });
 
@@ -16,65 +25,74 @@ function initPage() {
     });
 }
 
-function buildingsRefresh(data) {
-    var selectList = $("#BuildingsSelect")
-    selectList.append($(new Option(" ", "")))
-    $.each(data, function(key, value) {
-        selectList.append($(new Option(value.Name, value.Id)));
-    })
-    selectList.val(0);
+function buildingsRefresh(buildings) {
+    var buildingSelect = $("#BuildingsSelect");
+    buildingSelect.append($(new Option(" ", "")))
+    $.each(buildings, function(key) {
+        buildingSelect.append($(new Option(key, key)));
+    });
+    buildingSelect.val(0);
 }
 
-function profileRefresh(selectedBuiding) {
-
-    if (!window.Profiles) {
-        $.getJSON("http://localhost:8080/Profiles.json",
-            function(value) {
-                window.Profiles = value;
-                fillProfiles(selectedBuiding);
-            });
-    } else {
-        fillProfiles(selectedBuiding);
-    }
-}
-
-function fillProfiles(selectedBuiding) {
-    var selectList = $("#ProfileSelect").find('option')
+function profilesRefresh(selectedBuiding) {
+    var profileSelect = $("#ProfileSelect");
+    profileSelect.find('option')
         .remove()
         .end();
-    selectList.append($(new Option("Все", "")))
+    profileSelect.append($(new Option("Все", "")))
     if (selectedBuiding) {
-        $.each(window.Profiles[selectedBuiding], function(key, value) {
-            selectList.append($(new Option(value.Name, value.Id)));
+        $.each(window.buildings[selectedBuiding], function(key) {
+            profileSelect.append($(new Option(key, key)));
         })
     }
-    selectList.val();
+    profileSelect.val();
 }
 
 
 function auditoriesRefresh(selProfileId) {
-
-    if (!window.Auditories) {
-        $.getJSON("http://localhost:8080/Rooms.json",
-            function(value) {
-                window.Auditories = value;
-                fillAuditories(selProfileId);
-            });
-    } else {
-        fillAuditories(selProfileId);
-    }
-}
-
-function fillAuditories(selProfileId) {
-    var selectList = $("#RoomSelect").find('option')
+    var roomSelect = $("#RoomSelect");
+    var buildingSelect = $("#BuildingsSelect");
+    roomSelect.find('option')
         .remove()
         .end();
-    selectList.append($(new Option("Все", "")))
+    roomSelect.append($(new Option("Все", "")))
 
     if (selProfileId) {
-        $.each(window.Auditories[selProfileId], function(key, value) {
-            selectList.append($(new Option(value.Number, value.Id)));
+        $.each(window.buildings[buildingSelect.val()][selProfileId], function(key, value) {
+            roomSelect.append($(new Option(value, value)));
         })
     }
-    selectList.val();
+    roomSelect.val();
+}
+
+function fillStudentsTable(students) {
+    let tableBody = $("#StudentsTable").find("tbody");
+    $.each(students, function(key, value) {
+        tableBody.append(`<tr>+
+            <td>${++key}</td>
+            <td>${value.name}</td>
+            <td>${value.room}</td>
+            <td>${value.profile}</td>
+            <td>${value.isBel}</td>
+        </tr>`)
+    });
+}
+
+function createUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+function sortTableByColumn(colNumber) {
+    window.currentsortindex = colNumber;
+    var rows = $("#StudentsTable tbody").children('tr');
+    rows.sort(function(a, b) {
+        if (a.cells[colNumber].innerText > b.cells[colNumber].innerText) return 1;
+        if (a.cells[colNumber].innerText == b.cells[colNumber].innerText) return 0;
+        if (a.cells[colNumber].innerText < b.cells[colNumber].innerText) return -1;
+    });
+    fillStudentsTable(rows);
 }
