@@ -194,6 +194,15 @@ tr:hover {
     margin-right: 0.5em;
 }
 
+.sort-asc,
+.sort-desc {
+    display: normal;
+}
+
+.hidden {
+    display: none;
+}
+
 @media only screen and (max-width: 768px) {
     .container {
         max-width: 768px;

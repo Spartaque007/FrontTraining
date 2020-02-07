@@ -12,7 +12,9 @@ function initPage() {
     $.getJSON("http://localhost:8080/Students.json",
         function(value) {
             window.students = value;
-            fillStudentsTable(value);
+            window.sortParam = {};
+            sortStudentsByColumn(1, false)
+            fillStudentsTable();
         });
 
     $("#BuildingsSelect").on('change', function() {
@@ -23,6 +25,11 @@ function initPage() {
     $("#ProfileSelect").on('change', function() {
         auditoriesRefresh(this.value);
     });
+
+    $("#StudentsTable thead tr").on('click', function(event) {
+        sortTable(event)
+    });
+
 }
 
 function buildingsRefresh(buildings) {
@@ -65,9 +72,11 @@ function auditoriesRefresh(selProfileId) {
     roomSelect.val();
 }
 
-function fillStudentsTable(students) {
-    let tableBody = $("#StudentsTable").find("tbody").empty();
 
+
+function fillStudentsTable() {
+
+    let tableBody = $("#StudentsTable").find("tbody").empty();
 
     $.each(students, function(key, value) {
         tableBody.append(`<tr>+
@@ -80,24 +89,47 @@ function fillStudentsTable(students) {
     });
 }
 
-function createUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0,
-            v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
+function sortTable(event) {
+
+    var currentIndex = event.target.cellIndex;
+    var prevIndex = sortParam.currentCell;
+
+    if (currentIndex == 0) return;
+
+    if (currentIndex == prevIndex) {
+
+        sortParam.descDirection = !sortParam.descDirection;
+        sortStudentsByColumn(currentIndex, sortParam.descDirection)
+
+    } else {
+        sortParam.descDirection = false;
+        sortStudentsByColumn(currentIndex, sortParam.descDirection);
+
+    }
+    fillStudentsTable();
+    if (sortParam.descDirection) {
+
+    }
+
+
+
+    event.target.getElementsByClassName(sortParam.descDirection ? "sort-desc" : "sort-asc")[0].classList.remove("hidden");
+
 }
 
-function sortTableByColumn(parameter) {
+function sortStudentsByColumn(sortColumn, desc = false) {
+
+    var propertyName = Object.keys(students[0])[sortColumn - 1];
 
     students.sort(function(a, b) {
-        let tmpValA = a[parameter];
-        let tmpValB = b[parameter];
+        let tmpValA = a[propertyName];
+        let tmpValB = b[propertyName];
 
-        if (tmpValA > tmpValB) return 1;
+        if (tmpValA > tmpValB) return desc ? -1 : 1;
         if (tmpValA == tmpValB) return 0;
-        if (tmpValA < tmpValB) return -1;
+        if (tmpValA < tmpValB) return desc ? 1 : -1;
     });
-    fillStudentsTable(students);
 
+    window.sortParam.currentCell = sortColumn;
+    window.sortParam.descDirection = desc;
 }
