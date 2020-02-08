@@ -196,11 +196,11 @@ tr:hover {
 
 .sort-asc,
 .sort-desc {
-    display: normal;
+    display: none;
 }
 
-.hidden {
-    display: none;
+.active {
+    display: inline;
 }
 
 @media only screen and (max-width: 768px) {

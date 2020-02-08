@@ -91,7 +91,9 @@ function fillStudentsTable() {
 
 function sortTable(event) {
 
-    var currentIndex = event.target.cellIndex;
+    var currentElement = event.target.cellIndex == undefined ? event.target.parentElement : event.target;
+    var currentIndex = currentElement.cellIndex;
+
     var prevIndex = sortParam.currentCell;
 
     if (currentIndex == 0) return;
@@ -107,13 +109,13 @@ function sortTable(event) {
 
     }
     fillStudentsTable();
-    if (sortParam.descDirection) {
 
+    var prevElementActive = currentElement.parentElement.getElementsByClassName("active");
+    if (prevElementActive.length > 0) {
+        prevElementActive[0].classList.remove("active");
     }
 
-
-
-    event.target.getElementsByClassName(sortParam.descDirection ? "sort-desc" : "sort-asc")[0].classList.remove("hidden");
+    currentElement.getElementsByClassName(sortParam.descDirection ? "sort-desc" : "sort-asc")[0].classList.add("active");
 
 }
 
