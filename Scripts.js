@@ -13,7 +13,6 @@ function initPage() {
         function(value) {
             window.students = value;
             window.sortParam = {};
-            sortStudentsByColumn(1, false)
             fillStudentsTable();
         });
 
@@ -84,7 +83,7 @@ function fillStudentsTable() {
             <td>${value.name}</td>
             <td>${value.room}</td>
             <td>${value.profile}</td>
-            <td>${value.isBel}</td>
+            <td ${value.isBel ? "class=\"bel\"":"" }></td>
         </tr>`)
     });
 }
@@ -93,10 +92,19 @@ function sortTable(event) {
 
     var currentElement = event.target.cellIndex == undefined ? event.target.parentElement : event.target;
     var currentIndex = currentElement.cellIndex;
+    if (currentIndex == 0) return;
 
     var prevIndex = sortParam.currentCell;
 
-    if (currentIndex == 0) return;
+    var prevDirectionElement = document.querySelector("span[data-active='1']");
+    if (prevDirectionElement != null) {
+        prevDirectionElement.dataset.active = 0;
+        prevDirectionElement.classList.remove(sortParam.descDirection ? "directn-desc" : "directn-asc");
+        prevDirectionElement.classList.add("hidden");
+    }
+
+
+
 
     if (currentIndex == prevIndex) {
 
@@ -109,14 +117,10 @@ function sortTable(event) {
 
     }
     fillStudentsTable();
-
-    var prevElementActive = currentElement.parentElement.getElementsByClassName("active");
-    if (prevElementActive.length > 0) {
-        prevElementActive[0].classList.remove("active");
-    }
-
-    currentElement.getElementsByClassName(sortParam.descDirection ? "sort-desc" : "sort-asc")[0].classList.add("active");
-
+    currentDirectionElement = currentElement.getElementsByTagName("span")[0];
+    currentDirectionElement.dataset.active = 1;
+    currentDirectionElement.classList.remove("hidden");
+    currentDirectionElement.classList.add(sortParam.descDirection ? "directn-desc" : "directn-asc");
 }
 
 function sortStudentsByColumn(sortColumn, desc = false) {
