@@ -84,8 +84,8 @@
     
     input:focus,
     select:focus {
-        box-shadow: 2px 2px 5px 4px blue;
-        transition: all 0.5s;
+        box-shadow: 0px 0px 4px 3px blue;
+        transition: all 0.7s;
     }
     
     .input-element {
@@ -161,7 +161,7 @@
         font-weight: bold;
     }
     
-    tr:hover {
+    tbody tr:hover {
         background-color: #dee2e6;
     }
     
@@ -196,21 +196,24 @@
     }
     
     .directn-desc {
-        transform: rotate(-90deg);
-        -webkit-transform: rotate(-90deg);
-        -ms-transform: rotate(-90deg);
-        transition: transform 1s;
+        transform: rotateX(180);
+        -webkit-transform: rotateX(180);
+        -ms-transform: rotateX(180);
+        transition: transform 1.5s;
     }
     
     .directn-asc {
-        transform: rotate(90deg);
-        -webkit-transform: rotate(90deg);
-        -ms-transform: rotate(90deg);
-        transition: transform 1s;
+        transform: rotateX(-180deg);
+        -webkit-transform: rotateX(-180deg);
+        -ms-transform: rotateX(-180deg);
+        transition: transform 1.5s;
     }
     
     .hidden {
         visibility: hidden;
+        transform: rotateX(-90deg);
+        -webkit-transform: rotateX(-90deg);
+        -ms-transform: rotateX(-90deg);
     }
     
     .directn {
@@ -223,7 +226,7 @@
         vertical-align: top;
         background: repeating-linear-gradient( 180deg, #ffffff, #ffffff 33%, #ed0909 0px, #ff0000 66%);
         width: 1.5rem;
-        height: 1rem;
+        height: 0.5rem;
         border: 1px solid;
     }
     
