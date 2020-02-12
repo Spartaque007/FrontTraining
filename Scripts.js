@@ -62,6 +62,10 @@ function initPage() {
         fillStudentsTable(students);
     });
 
+    $("#StudentsTable tbody").mousedown(function(event) {
+        dragStudent(event);
+    });
+
 }
 
 function buildingsRefresh() {
@@ -123,11 +127,14 @@ function fillAuditoriesTable(auditories) {
     var rows = "";
 
     $.each(auditories, function(key, value) {
-        rows += `<tr>+
-        <td>${value.name}</td>
+        let roomNumber = value.name;
+        let roomId = value._id;
+        let bel = value.bel;
+        rows += `<tr class="droppable" data-auditory="${roomId}" data-bel="${bel}">+
+        <td>${roomNumber}</td>
         <td>${value.count}</td>
         <td>${value.max}</td>
-        <td ${value.bel ? "class=\"bel\"":"" }></td>
+        <td ${bel ? "class=\"bel\"":"" }></td>
     </tr>`
     });
     tableBody.append(rows);
@@ -157,15 +164,18 @@ function fillStudentsTable(students) {
     if (filteredStudents != null) {
         var rows = "";
         $.each(filteredStudents, function(key, value) {
-            var auditoryId = value.audience;
-            var profileId = value.profile;
+            let auditoryId = value.audience;
+            let auditoryNumber = dictionary.audiences[auditoryId];
+            let profileId = value.profile;
+            let name = `${value.firstName} ${value.lastName} ${value.parentName}`;
+            let bel = value.needBel;
 
-            rows += `<tr draggable="true" >+
+            rows += `<tr class="draggable" data-name="${name}" data-auditory="${auditoryId}" data-bel="${bel}">+
             <td>${++key}</td>
-            <td>${value.firstName} ${value.lastName} ${value.parentName}</td>
-            <td>${dictionary.audiences[auditoryId]}</td>
+            <td>${name}</td>
+            <td>${auditoryNumber}</td>
             <td>${dictionary.profiles[profileId]}</td>
-            <td ${value.needBel ? "class=\"bel\"":"" }></td>
+            <td ${bel ? "class=\"bel\"":"" }></td>
         </tr>`
         });
         tableBody.append(rows);
@@ -264,4 +274,93 @@ function filterStudentsTableByRoom(roomId) {
     } else {
         return students;
     }
+}
+
+function dragStudent(event) {
+
+    var currentRow = event.target.parentElement;
+    if (!currentRow.classList.contains("draggable")) return;
+    var dragElement = createDragElement(currentRow);
+    currentRow.classList.add("activeOnDrag");
+
+    var auditoriesTable = document.getElementById("AuditoriesTableBody");
+    auditoriesTable.classList.add("activeOnDrag");
+
+
+    move(event.pageX, event.pageY);
+
+    document.addEventListener('mousemove', onMouseMove);
+
+    function move(x, y) {
+        dragElement.style.left = x - dragElement.offsetLeft / 2 + 'px';
+        dragElement.style.top = y - dragElement.offsetHeight / 2 + 'px';
+    }
+
+    var destinationElement = null;
+
+
+    function onMouseMove(event) {
+        move(event.pageX, event.pageY);
+        dragElement.style.visibility = "hidden";
+        let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+        dragElement.style.visibility = "visible";
+
+        if (destinationElement) {
+            destinationElement.classList.remove("underDrag");
+        }
+
+        if (elemBelow == null) return;
+
+        let droppableBelow = elemBelow.closest('.droppable');
+
+
+        if (!droppableBelow) {
+            dragElement.style.cursor = "not-allowed";
+            destinationElement = null;
+        } else {
+            dragElement.style.cursor = "move";
+            destinationElement = droppableBelow;
+            destinationElement.classList.add("underDrag");
+        }
+
+    }
+
+    dragElement.onmouseup = function() {
+        dragElement.onmouseup = null;
+
+        auditoriesTable.classList.remove("activeOnDrag");
+        currentRow.classList.remove("activeOnDrag");
+
+        if (destinationElement) {
+            destinationElement.classList.remove("underDrag");
+            let prevRoomId = currentRow.dataset.auditory;
+            let newRoomId = destinationElement.dataset.auditory;
+            let belAccept = currentRow.dataset.bel == destinationElement.dataset.bel;
+            let roomChanged = prevRoomId != newRoomId;
+            let name = currentRow.dataset.name;
+            if (belAccept) {
+                let prevRoomNumber = dictionary.audiences[prevRoomId];
+                let newRoomNumber = dictionary.audiences[newRoomId];
+                console.log(roomChanged ? `${name} переехал(а) из аудитории ${prevRoomNumber} в аудиторию ${newRoomNumber}` : `${name} никуда не переехал(а) из аудитории ${prevRoomNumber}`);
+            } else {
+                alert(currentRow.isBel ? "попытка посадить белоруса к не беларусам" : "попытка посадить не белоруса к беларусам")
+            }
+        }
+        dragElement.remove();
+        document.removeEventListener('mousemove', onMouseMove);
+    };
+}
+
+function createDragElement(element) {
+
+    var dragElement = document.createElement("table");
+    dragElement.classList.add("table");
+    dragElement.classList.add("main-table");
+    dragElement.classList.add("activeOnDrag");
+    dragElement.style.opacity = "0.5";
+    dragElement.append(element.cloneNode(true));
+    dragElement.style.position = 'absolute';
+    dragElement.style.zIndex = 1000;
+    document.body.append(dragElement);
+    return dragElement;
 }
