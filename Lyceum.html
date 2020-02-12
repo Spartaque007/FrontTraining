@@ -5,11 +5,6 @@
     <title>Lyceum</title>
     <meta charset="UTF-8" />
     <link href="Styles.css" rel="stylesheet">
-    <script src="jquery-3.4.1.min.js" type="text/javascript"></script>
-    <script src="Scripts.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        $(document).ready(initPage);
-    </script>
 </head>
 
 <body>
@@ -36,7 +31,7 @@
         <div class="filter-group sticky">
             <div class="filter"> 
                 <label>Поиск</label>
-                <input class="input-element" placeholder="Поиск">
+                <input id="SearchInput" class="input-element" placeholder="Поиск">
             </div>
             <div class="filter">
                 <label>Корпус</label>
@@ -58,153 +53,28 @@
             </div>
         </div>
         <div class="tables-group"> 
-            <table class="table main-table autonumber">
+            <table id="StudentsTable" class="table main-table ">
                 <thead >
-                    <tr  >
+                    <tr>
                     <th>#</th>
-                    <th>ФИО</th>
-                    <th>Каб.</th>
-                    <th>Профиль</th>
-                    <th>Бел</th>
+                    <th >ФИО 
+                        <span class="directn hidden" > 🢁</span>
+                    </th>
+                    <th>Каб.
+                        <span class="directn hidden" > 🢁</span>
+                    </th>
+                    <th>Профиль
+                        <span class="directn hidden" > 🢁</span>
+                    </th>
+                    <th>Бел
+                        <span class="directn hidden" > 🢁</span>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td ></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Иванов Иван Иванович</td>
-                    <td>100500</td>
-                    <td>Математический</td>
-                    <td>-</td>
-                </tr>
-            </tbody>
+                </tbody>
             </table>
-            <table class="table slave-table ">
+            <table id="AuditoriesTable" class="table slave-table ">
                 <thead>
                 <tr >
                     <th>#</th>
@@ -214,38 +84,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>100</td>
-                    <td>0</td>
-                    <td>20</td>
-                    <td>-</td>
-                    
-                </tr>
-                <tr>
-                    <td>101</td>
-                    <td>0</td>
-                    <td>20</td>
-                    <td>-</td>
-                    
-                </tr>
-                <tr>
-                    <td>102</td>
-                    <td>0</td>
-                    <td>20</td>
-                    <td>-</td>
-                    
-                </tr>
-                <tr>
-                    <td>100500</td>
-                    <td>0</td>
-                    <td>20</td>
-                    <td>-</td>
-                    
-                </tr>
+                
             </tbody>
             </table>
         </div>
     </div>
+   
 </body>
 
+<script src="jquery-3.4.1.min.js" type="text/javascript"></script>
+<script src="Scripts.js" type="text/javascript"></script>
+   
 </html>
