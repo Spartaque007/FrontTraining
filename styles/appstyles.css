@@ -1,0 +1,27 @@
+.sideBar {
+    box-sizing: border-box;
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    overflow-x: hidden;
+    padding-top: 60px;
+    transition: width 2s;
+}
+
+.sidebar-show {
+    width: 80%;
+}
+
+.closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+.closebtn:hover {
+    font-size: 40px;
+    color: darkred;
+}
