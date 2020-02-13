@@ -243,6 +243,15 @@
         background: linear-gradient(white, gray, darkgrey, gray, white);
     }
     
+    .drag-element {
+        background-color: darkgrey;
+        width: 45%;
+        opacity: 0.5;
+        position: absolute;
+        z-index: 1000;
+        font-size: 0.9rem;
+    }
+    
     @media only screen and (max-width: 768px) {
         .container {
             max-width: 768px;
@@ -265,5 +274,8 @@
         .table {
             width: 100%;
             margin: 10px 0px;
+        }
+        .drag-element {
+            width: 80%;
         }
     }

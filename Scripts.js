@@ -20,52 +20,60 @@ var sortDictionary = {
     4: "needBel"
 }
 
+var dragElement = null;
+var destinationElement = null;
+var currentRow = null;
+
 function initPage() {
-    $.getJSON("https://lyceumexams.herokuapp.com/api/dictionary",
-        function(value) {
-            window.dictionary = value;
-        });
+    $.getJSON("https://lyceumexams.herokuapp.com/api/dictionary", onDictionaryRecieved);
+    $.getJSON("https://lyceumexams.herokuapp.com/api/corpses", onCorpusesRecieved);
+    $(document).on('change', "#BuildingsSelect", onBuildingSelectChanged);
+    $(document).on('change', "#ProfileSelect", onProfileSelectChanged);
+    $(document).on('change', "#RoomSelect", onRoomSelectChanged);
+    $(document).on('click', "#StudentsTable thead tr", sortTable);
+    $(document).on('input', "#SearchInput", onSearchApplied);
+    $(document).on("mousedown", "#StudentsTable tbody", dragStudent);
+    $(document).on("mousemove", onMouseMove)
+    $(document).on("mouseup", onMouseUp)
+}
 
-    $.getJSON("https://lyceumexams.herokuapp.com/api/corpses",
-        function(value) {
-            window.buildings = value;
-            buildingsRefresh();
-            profilesRefresh();
-            auditoriesRefresh()
-        });
-    $("#BuildingsSelect").on('change', function(event) {
-        state.currentBuilding = event.target.value;
-        state.currentProfile = "";
-        state.currentAuditoryId = "";
+function onCorpusesRecieved(value) {
+    window.buildings = value;
+    buildingsRefresh();
+    profilesRefresh();
+    auditoriesRefresh()
+}
 
-        profilesRefresh();
-        auditoriesRefresh()
-        setStudents();
-        hidePrevDirectionElement();
-    });
-    $("#ProfileSelect").on('change', function(event) {
-        state.currentProfile = event.target.value;
-        auditoriesRefresh();
-        setStudents();
-        hidePrevDirectionElement();
-    });
-    $("#RoomSelect").on('change', function(event) {
-        state.currentAuditoryId = event.target.value;
-        fillStudentsTable(students);
-    });
-    $("#StudentsTable thead tr").on('click', function(event) {
-        sortTable(event)
-    });
+function onDictionaryRecieved(value) {
+    window.dictionary = value;
+}
 
-    $("#SearchInput").on('input', function(event) {
-        sortParam.filterText = event.target.value;
-        fillStudentsTable(students);
-    });
+function onBuildingSelectChanged(event) {
+    state.currentBuilding = event.target.value;
+    state.currentProfile = "";
+    state.currentAuditoryId = "";
 
-    $("#StudentsTable tbody").mousedown(function(event) {
-        dragStudent(event);
-    });
+    profilesRefresh();
+    auditoriesRefresh()
+    setStudents();
+    hidePrevDirectionElement();
+}
 
+function onProfileSelectChanged(event) {
+    state.currentProfile = event.target.value;
+    auditoriesRefresh();
+    setStudents();
+    hidePrevDirectionElement();
+}
+
+function onRoomSelectChanged(event) {
+    state.currentAuditoryId = event.target.value;
+    fillStudentsTable(students);
+}
+
+function onSearchApplied(event) {
+    sortParam.filterText = event.target.value;
+    fillStudentsTable(students);
 }
 
 function buildingsRefresh() {
@@ -239,7 +247,7 @@ function applyFilters() {
 
     var filteredStudents = filterStudentsTableByRoom(state.currentAuditoryId);
 
-    var filteredStudents = filterTableByName(sortParam.filterText, filteredStudents);
+    filteredStudents = filterTableByName(sortParam.filterText, filteredStudents);
     return filteredStudents;
 }
 
@@ -250,25 +258,16 @@ function filterTableByName(inputText, students) {
         return students;
     }
 
-    let tmpStudentsArray = [];
     inputText = inputText.toLowerCase();
+    let tmpStudentsArray = students.filter(item => item.firstName.toLowerCase().includes(inputText));
 
-    students.forEach(function(item) {
-        if (item.firstName.toLowerCase().includes(inputText)) {
-            tmpStudentsArray.push(item);
-        }
-    });
     return tmpStudentsArray;
 }
 
 function filterStudentsTableByRoom(roomId) {
     if (roomId) {
-        let tmpStudents = [];
-        students.forEach(function(item, index) {
-            if (item.audience == roomId) {
-                tmpStudents.push(item);
-            }
-        });
+        let tmpStudents = students.filter(item => item.audience == roomId);
+
         return tmpStudents;
 
     } else {
@@ -278,89 +277,90 @@ function filterStudentsTableByRoom(roomId) {
 
 function dragStudent(event) {
 
-    var currentRow = event.target.parentElement;
-    if (!currentRow.classList.contains("draggable")) return;
-    var dragElement = createDragElement(currentRow);
+    currentRow = event.target.parentElement;
+
+    if (!currentRow.classList.contains("draggable")) {
+        return;
+    }
+
+    dragElement = createDragElement(currentRow);
     currentRow.classList.add("activeOnDrag");
 
     var auditoriesTable = document.getElementById("AuditoriesTableBody");
     auditoriesTable.classList.add("activeOnDrag");
 
+    move(event.pageX, event.pageY);
+}
+
+function onMouseMove(event) {
+    if (dragElement == null) return;
 
     move(event.pageX, event.pageY);
+    dragElement.style.visibility = "hidden";
+    let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+    dragElement.style.visibility = "visible";
 
-    document.addEventListener('mousemove', onMouseMove);
-
-    function move(x, y) {
-        dragElement.style.left = x - dragElement.offsetLeft / 2 + 'px';
-        dragElement.style.top = y - dragElement.offsetHeight / 2 + 'px';
+    if (destinationElement) {
+        destinationElement.classList.remove("underDrag");
     }
 
-    var destinationElement = null;
+    if (elemBelow == null) return;
 
+    let droppableBelow = elemBelow.closest('.droppable');
 
-    function onMouseMove(event) {
-        move(event.pageX, event.pageY);
-        dragElement.style.visibility = "hidden";
-        let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
-        dragElement.style.visibility = "visible";
+    if (!droppableBelow) {
+        dragElement.style.cursor = "not-allowed";
+        destinationElement = null;
+    } else {
+        dragElement.style.cursor = "move";
+        destinationElement = droppableBelow;
+        destinationElement.classList.add("underDrag");
+    }
 
-        if (destinationElement) {
-            destinationElement.classList.remove("underDrag");
-        }
+}
 
-        if (elemBelow == null) return;
+function onMouseUp() {
 
-        let droppableBelow = elemBelow.closest('.droppable');
+    if (dragElement == null) return;
+    document.onmouseup = null;
+    var auditoriesTable = document.getElementById("AuditoriesTableBody");
+    auditoriesTable.classList.remove("activeOnDrag");
+    currentRow.classList.remove("activeOnDrag");
 
-
-        if (!droppableBelow) {
-            dragElement.style.cursor = "not-allowed";
-            destinationElement = null;
+    if (destinationElement) {
+        destinationElement.classList.remove("underDrag");
+        let prevRoomId = currentRow.dataset.auditory;
+        let newRoomId = destinationElement.dataset.auditory;
+        let belAccept = currentRow.dataset.bel == destinationElement.dataset.bel;
+        let roomChanged = prevRoomId != newRoomId;
+        let name = currentRow.dataset.name;
+        if (belAccept) {
+            let prevRoomNumber = dictionary.audiences[prevRoomId];
+            let newRoomNumber = dictionary.audiences[newRoomId];
+            console.log(roomChanged ? `${name} переехал(а) из аудитории ${prevRoomNumber} в аудиторию ${newRoomNumber}` : `${name} никуда не переехал(а) из аудитории ${prevRoomNumber}`);
         } else {
-            dragElement.style.cursor = "move";
-            destinationElement = droppableBelow;
-            destinationElement.classList.add("underDrag");
+            alert(currentRow.dataset.isBel ? "попытка посадить белоруса к не беларусам" : "попытка посадить не белоруса к беларусам")
         }
-
     }
+    dragElement.remove();
+    document.removeEventListener('mousemove', onMouseMove);
+    dragElement = null;
+    destinationElement = null;
+    currentRow = null;
 
-    dragElement.onmouseup = function() {
-        dragElement.onmouseup = null;
+};
 
-        auditoriesTable.classList.remove("activeOnDrag");
-        currentRow.classList.remove("activeOnDrag");
-
-        if (destinationElement) {
-            destinationElement.classList.remove("underDrag");
-            let prevRoomId = currentRow.dataset.auditory;
-            let newRoomId = destinationElement.dataset.auditory;
-            let belAccept = currentRow.dataset.bel == destinationElement.dataset.bel;
-            let roomChanged = prevRoomId != newRoomId;
-            let name = currentRow.dataset.name;
-            if (belAccept) {
-                let prevRoomNumber = dictionary.audiences[prevRoomId];
-                let newRoomNumber = dictionary.audiences[newRoomId];
-                console.log(roomChanged ? `${name} переехал(а) из аудитории ${prevRoomNumber} в аудиторию ${newRoomNumber}` : `${name} никуда не переехал(а) из аудитории ${prevRoomNumber}`);
-            } else {
-                alert(currentRow.isBel ? "попытка посадить белоруса к не беларусам" : "попытка посадить не белоруса к беларусам")
-            }
-        }
-        dragElement.remove();
-        document.removeEventListener('mousemove', onMouseMove);
-    };
+function move(x, y) {
+    dragElement.style.left = x - dragElement.offsetLeft / 2 + 'px';
+    dragElement.style.top = y - dragElement.offsetHeight / 2 + 'px';
 }
 
 function createDragElement(element) {
 
     var dragElement = document.createElement("table");
     dragElement.classList.add("table");
-    dragElement.classList.add("main-table");
-    dragElement.classList.add("activeOnDrag");
-    dragElement.style.opacity = "0.5";
+    dragElement.classList.add("drag-element");
     dragElement.append(element.cloneNode(true));
-    dragElement.style.position = 'absolute';
-    dragElement.style.zIndex = 1000;
     document.body.append(dragElement);
     return dragElement;
 }
