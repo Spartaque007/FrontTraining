@@ -25,3 +25,9 @@
     font-size: 40px;
     color: darkred;
 }
+
+.hiddenRow {
+    padding: 0 4px !important;
+    background-color: #eeeeee;
+    font-size: 13px;
+}
