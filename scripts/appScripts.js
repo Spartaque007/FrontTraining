@@ -6,8 +6,22 @@ var students = null;
 
 var state = {
     currentBuildingIndex: null,
-    currentBuildingId: null
+    currentBuildingId: null,
+    currentProfile: null
 }
+
+var sortParam = {
+    descDirection: true,
+    sortIndex: "",
+    activeDirectionElement: null,
+    filterText: ""
+};
+var sortDictionary = {
+    0: "name",
+    1: "audience",
+
+}
+
 
 function initPage() {
     $.getJSON("https://lyceumexams.herokuapp.com/api/dictionary", onDictionaryRecieved);
@@ -15,6 +29,10 @@ function initPage() {
     $(document).on("click", "#SideBarButton", showSideBar);
     $(document).on("click", "#CloseBtn", hideSideBar);
     $(document).on("click", "#SideBarList li", onChangeBuilding);
+    $(document).on('change', "#ProfileSelect", onProfileSelectChanged);
+    $(document).on('change', "#RoomSelect", onRoomSelectChanged);
+    $(document).on('click', "#StudentsTable thead tr", sortTable);
+
 }
 
 function onCorpusesRecieved(value) {
@@ -28,56 +46,31 @@ function onDictionaryRecieved(value) {
     dictionary = value;
 }
 
-function fillMenu() {
-    var buildingList = $("#SideBarList");
-    var rows = "";
-    buildings.forEach(e => rows += `<li data-building="${e.alias}" class="list-group-item list-group-item-action">${e.name}`);
-    buildingList.append(rows);
-
+function onChangeBuilding(event) {
+    let newBuildingId = event.target.dataset.buildingid;
+    hideSideBar()
+    if (newBuildingId == state.currentBuildingId) {
+        return
+    }
+    state.currentBuildingId = newBuildingId;
+    state.currentBuildingIndex = event.target.dataset.buildingindex;
+    document.getElementById("CurrentCorpText").innerHTML = dictionary.corpses[state.currentBuildingId];
+    profilesRefresh();
+    auditoriesRefresh();
+    setStudents()
 }
 
-function profilesRefresh() {
-    var profileSelect = $("#ProfileSelect");
-    profileSelect.find('option')
-        .remove()
-        .end();
-    profileSelect.append($(new Option("All", "")))
-
-    if (state.currentBuilding) {
-        var places = buildings[state.currentBuilding].places;
-        $.each(places, function(key, value) {
-            profileSelect.append($(new Option(value.code, key)));
-        });
-    }
-    profileSelect.val();
+function onProfileSelectChanged(event) {
+    state.currentProfile = event.target.value;
+    auditoriesRefresh();
+    setStudents();
+    // hidePrevDirectionElement();
 }
 
-function auditoriesRefresh() {
-
-    var auditories = null;
-    if (state.currentBuilding && state.currentProfile) {
-        auditories = buildings[state.currentBuilding].places[state.currentProfile].audience;
-    } else if (state.currentBuilding) {
-        auditories = [];
-        buildings[state.currentBuilding].places.forEach(function(item, i, arr) {
-            auditories = auditories.concat(item.audience);
-        });
-    }
-
-    var roomSelect = $("#RoomSelect");
-    roomSelect.find('option')
-        .remove()
-        .end();
-    roomSelect.append($(new Option("All", "")));
-    if (auditories != null) {
-        $.each(auditories, function(key, value) {
-            roomSelect.append($(new Option(value.name, value._id)));
-        })
-    }
-    roomSelect.val();
-
+function onRoomSelectChanged(event) {
+    state.currentAuditoryId = event.target.value;
+    fillStudentsTable(students);
 }
-
 
 function showSideBar() {
     var sideBar = document.getElementById("SideBar");
@@ -94,43 +87,56 @@ function hideSideBar() {
     sideBar.classList.remove("sidebar-show");
 }
 
-function onChangeBuilding(event) {
-    let newBuildingId = event.target.dataset.building;
-    if (newBuildingId == state.currentBuildingId) {
-        return
-    }
-    state.currentBuildingId = newBuildingId;
-    fillStudentsTable();
+function fillMenu() {
+    var buildingList = $("#SideBarList");
+    var rows = "";
+    buildings.forEach((e, index) => rows += `<li data-buildingid="${e.alias}" data-buildingindex="${index}" class="list-group-item list-group-item-action">${e.name}`);
+    buildingList.append(rows);
 }
 
-function fillStudentsTable() {
-    let tableBody = $("#StudentsTable").find("tbody").empty();
+function auditoriesRefresh() {
 
-    var filteredStudents = applyFilters();
-
-    if (filteredStudents != null) {
-        var rows = "";
-        $.each(filteredStudents, function(key, value) {
-            let auditoryId = value.audience;
-            let auditoryNumber = dictionary.audiences[auditoryId];
-            let profileId = value.profile;
-            let name = `${value.firstName} ${value.lastName} ${value.parentName}`;
-            let bel = value.needBel;
-
-            rows += `<tr class="draggable" data-name="${name}" data-auditory="${auditoryId}" data-bel="${bel}">+
-            <td>${++key}</td>
-            <td>${name}</td>
-            <td>${auditoryNumber}</td>
-            <td>${dictionary.profiles[profileId]}</td>
-            <td ${bel ? "class=\"bel\"":"" }></td>
-        </tr>`
+    var auditories = null;
+    if (state.currentBuildingIndex && state.currentProfile) {
+        auditories = buildings[state.currentBuildingIndex].places[state.currentProfile].audience;
+    } else if (state.currentBuildingIndex) {
+        auditories = [];
+        buildings[state.currentBuildingIndex].places.forEach(function(item, i, arr) {
+            auditories = auditories.concat(item.audience);
         });
-        tableBody.append(rows);
     }
 
+    var roomSelect = $("#RoomSelect");
+    roomSelect.find('option')
+        .remove()
+        .end();
+    roomSelect.append($(new Option("All", "")));
+    if (auditories != null) {
+        $.each(auditories, function(key, value) {
+            roomSelect.append($(new Option(value.name, value._id)));
+        })
+    }
+    roomSelect.val();
+}
+
+function profilesRefresh() {
+    var profileSelect = $("#ProfileSelect");
+    profileSelect.find('option')
+        .remove()
+        .end();
+    profileSelect.append($(new Option("All", "")))
+
+    if (state.currentBuildingId) {
+        var places = buildings[state.currentBuildingIndex].places;
+        $.each(places, function(key, value) {
+            profileSelect.append($(new Option(value.code, key)));
+        });
+    }
+    profileSelect.val();
 }
 
 function setStudents() {
+    hidePrevDirectionElement()
     if (state.currentBuildingIndex) {
         building = buildings[state.currentBuildingIndex];
         var alias = building.alias;
@@ -147,9 +153,109 @@ function setStudents() {
 }
 
 
+function fillStudentsTable() {
+    let tableBody = $("#StudentsTable").find("tbody").empty();
+
+    var filteredStudents = applyFilters();
+
+    if (filteredStudents != null) {
+        var rows = "";
+        $.each(filteredStudents, function(key, value) {
+            let auditoryId = value.audience;
+            let auditoryNumber = dictionary.audiences[auditoryId];
+            let profileId = value.profile;
+            let name = `${value.firstName} ${value.lastName} ${value.parentName}`;
+            let bel = value.needBel;
 
 
+            rows += `<tr data-toggle="collapse" data-target="#studinfo${key}" class="accordion-toggle" aria-expanded="true">
+                            <td>${name}</td>
+                            <td>${auditoryNumber}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3 " class="hiddenRow ">
+                                <div class="accordian-body collapse" id="studinfo${key}" data-parent="#StudentsTableBody" aria-labelledby="StudentsTableBody">
+                                <div><span class="badge badge-secondary">Профиль:</span> ${dictionary.profiles[value.profile]} </div>
+                                <div><span class="badge badge-secondary">Телефон:</span>  <a href="tel://${value.phone}" class=""badge badge-info"">  ${value.phone} </a></div>
+                                <div><span class="badge badge-secondary">Email:</span> <a href="mailto: ${value.email} class="badge badge-light"> ${value.email}</a> </div>
+                                </div>
+                            </td>
+                        </tr>`
+
+        });
+        tableBody.append(rows);
+    }
+}
 
 function applyFilters() {
-    return students;
+
+    var filteredStudents = filterStudentsTableByRoom(state.currentAuditoryId);
+
+
+    return filteredStudents;
+}
+
+function filterStudentsTableByRoom(roomId) {
+    if (roomId) {
+        let tmpStudents = students.filter(item => item.audience == roomId);
+
+        return tmpStudents;
+
+    } else {
+        return students;
+    }
+}
+
+function sortTable(event) {
+    if (students == null) return;
+    var currentElement = event.target.cellIndex == undefined ? event.target.parentElement : event.target;
+    var currentIndex = currentElement.cellIndex;
+    if (currentIndex > 1) return;
+
+    hidePrevDirectionElement()
+    var isColumnNotChanged = (sortParam.sortIndex == currentIndex);
+    sortParam.descDirection = isColumnNotChanged ? !sortParam.descDirection : isColumnNotChanged;
+    sortStudentsByColumn(currentIndex, sortParam.descDirection);
+    fillStudentsTable(students);
+
+    currentDirectionElement = currentElement.getElementsByTagName("span")[0];
+    currentDirectionElement.classList.remove("hidden");
+    currentDirectionElement.classList.add(sortParam.descDirection ? "directn-desc" : "directn-asc");
+    sortParam.activeDirectionElement = currentDirectionElement;
+}
+
+function hidePrevDirectionElement() {
+    if (sortParam.activeDirectionElement != null) {
+        sortParam.activeDirectionElement.classList.remove(sortParam.descDirection ? "directn-desc" : "directn-asc");
+        sortParam.activeDirectionElement.classList.add("hidden");
+    }
+}
+
+function sortStudentsByColumn(sortColumn, desc = false) {
+    var propertyName = sortDictionary[sortColumn];
+
+    students.sort(function(a, b) {
+        let tmpValA;
+        let tmpValB;
+        if (propertyName == "name") {
+            tmpValA = a["firstName"] + a["lastName"] + a["parentName"];
+            tmpValB = b["firstName"] + b["lastName"] + b["parentName"];
+
+        } else if (propertyName == "needBel") {
+            tmpValA = a[propertyName];
+            tmpValB = b[propertyName];
+        } else {
+            tmpValA = dictionary[propertyName + "s"][a[propertyName]];
+            tmpValB = dictionary[propertyName + "s"][b[propertyName]];
+        }
+
+
+        if (tmpValA > tmpValB) return desc ? -1 : 1;
+        if (tmpValA == tmpValB) return 0;
+        if (tmpValA < tmpValB) return desc ? 1 : -1;
+    });
+
+    sortParam.sortIndex = sortColumn;
+    sortParam.descDirection = desc;
 }

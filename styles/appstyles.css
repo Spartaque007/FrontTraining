@@ -31,3 +31,28 @@
     background-color: #eeeeee;
     font-size: 13px;
 }
+
+.directn-desc {
+    transform: rotateX(180);
+    -webkit-transform: rotateX(180);
+    -ms-transform: rotateX(180);
+    transition: transform 1.5s;
+}
+
+.directn-asc {
+    transform: rotateX(-180deg);
+    -webkit-transform: rotateX(-180deg);
+    -ms-transform: rotateX(-180deg);
+    transition: transform 1.5s;
+}
+
+.hidden {
+    visibility: hidden;
+    transform: rotateX(-90deg);
+    -webkit-transform: rotateX(-90deg);
+    -ms-transform: rotateX(-90deg);
+}
+
+.directn {
+    display: inline-block;
+}
