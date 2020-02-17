@@ -3,11 +3,13 @@
 var dictionary = null;
 var buildings = null;
 var students = null;
+var downloadCounter = 2;
 
 var state = {
     currentBuildingIndex: null,
     currentBuildingId: null,
-    currentProfile: null
+    currentProfile: null,
+    currentAuditoryId: null
 }
 
 var sortParam = {
@@ -19,41 +21,69 @@ var sortParam = {
 var sortDictionary = {
     0: "name",
     1: "audience",
-
 }
-
 
 function initPage() {
     $.getJSON("https://lyceumexams.herokuapp.com/api/dictionary", onDictionaryRecieved);
     $.getJSON("https://lyceumexams.herokuapp.com/api/corpses", onCorpusesRecieved);
     $(document).on("click", "#SideBarButton", showSideBar);
     $(document).on("click", "#CloseBtn", hideSideBar);
-    $(document).on("click", "#SideBarList li", onChangeBuilding);
+    $(document).on("click", "#SideBarList li a", onChangeBuilding);
     $(document).on('change', "#ProfileSelect", onProfileSelectChanged);
     $(document).on('change', "#RoomSelect", onRoomSelectChanged);
     $(document).on('click', "#StudentsTable thead tr", sortTable);
+}
+
+function checkAllDownloads() {
+    if (downloadCounter == 0) {
+        restorePrevState();
+    }
 
 }
 
 function onCorpusesRecieved(value) {
     buildings = value;
-    fillMenu()
+    downloadCounter = --downloadCounter;
+    checkAllDownloads();
+    fillMenu();
     profilesRefresh();
     auditoriesRefresh()
 }
 
 function onDictionaryRecieved(value) {
     dictionary = value;
+    downloadCounter = --downloadCounter;
+    checkAllDownloads();
+}
+
+function restorePrevState() {
+    if (!location.hash) {
+        return;
+    }
+
+    var params = location.hash.split((/[\/,#]/)).filter(e => e);
+    if (params[1]) {
+        buildings.forEach((value, key) => {
+
+            if (value.alias != params[1]) return;
+
+            state.currentBuildingId = params[1];
+            state.currentBuildingIndex = key;
+            setStudents();
+            document.getElementById("CurrentCorpText").innerHTML = dictionary.corpses[state.currentBuildingId];
+        });
+    }
 }
 
 function onChangeBuilding(event) {
     let newBuildingId = event.target.dataset.buildingid;
     hideSideBar()
-    if (newBuildingId == state.currentBuildingId) {
+    if (newBuildingId === state.currentBuildingId) {
         return
     }
     state.currentBuildingId = newBuildingId;
     state.currentBuildingIndex = event.target.dataset.buildingindex;
+    state.currentAuditoryId = null;
     document.getElementById("CurrentCorpText").innerHTML = dictionary.corpses[state.currentBuildingId];
     profilesRefresh();
     auditoriesRefresh();
@@ -64,7 +94,7 @@ function onProfileSelectChanged(event) {
     state.currentProfile = event.target.value;
     auditoriesRefresh();
     setStudents();
-    // hidePrevDirectionElement();
+    hidePrevDirectionElement();
 }
 
 function onRoomSelectChanged(event) {
@@ -90,7 +120,7 @@ function hideSideBar() {
 function fillMenu() {
     var buildingList = $("#SideBarList");
     var rows = "";
-    buildings.forEach((e, index) => rows += `<li data-buildingid="${e.alias}" data-buildingindex="${index}" class="list-group-item list-group-item-action">${e.name}`);
+    buildings.forEach((e, index) => rows += `<li class="list-group-item list-group-item-action"> <a href="#table/${e.alias}/all" data-buildingid="${e.alias}" data-buildingindex="${index}">${e.name}</a></li>`);
     buildingList.append(rows);
 }
 
@@ -158,7 +188,7 @@ function fillStudentsTable() {
 
     var filteredStudents = applyFilters();
 
-    if (filteredStudents != null) {
+    if (filteredStudents.length > 0) {
         var rows = "";
         $.each(filteredStudents, function(key, value) {
             let auditoryId = value.audience;
@@ -169,16 +199,16 @@ function fillStudentsTable() {
 
 
             rows += `<tr data-toggle="collapse" data-target="#studinfo${key}" class="accordion-toggle" aria-expanded="true">
-                            <td>${name}</td>
-                            <td>${auditoryNumber}</td>
+                            <td><h3>${name}</h3></td>
+                            <td><h3>${auditoryNumber}</h3></td>
                             <td></td>
                         </tr>
                         <tr>
                             <td colspan="3 " class="hiddenRow ">
                                 <div class="accordian-body collapse" id="studinfo${key}" data-parent="#StudentsTableBody" aria-labelledby="StudentsTableBody">
-                                <div><span class="badge badge-secondary">Профиль:</span> ${dictionary.profiles[value.profile]} </div>
-                                <div><span class="badge badge-secondary">Телефон:</span>  <a href="tel://${value.phone}" class=""badge badge-info"">  ${value.phone} </a></div>
-                                <div><span class="badge badge-secondary">Email:</span> <a href="mailto: ${value.email} class="badge badge-light"> ${value.email}</a> </div>
+                                <h3><span class="badge badge-secondary">Профиль: </span> ${dictionary.profiles[value.profile]} </h3>
+                                <h3><span class="badge badge-secondary">Телефон:</span>  <a href="tel://${value.phone}" class=""badge badge-info"">  ${value.phone} </a></h3>
+                                <h3><span class="badge badge-secondary">Email:</span> <a href="mailto: ${value.email} class="badge badge-light"> ${value.email}</a> </h3>
                                 </div>
                             </td>
                         </tr>`
