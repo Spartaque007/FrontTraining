@@ -31,7 +31,7 @@ function initPage() {
     $(document).on("click", "#SideBarList li a", onChangeBuilding);
     $(document).on('change', "#ProfileSelect", onProfileSelectChanged);
     $(document).on('change', "#RoomSelect", onRoomSelectChanged);
-    $(document).on('click', "#StudentsTable thead tr", sortTable);
+    $(document).on('click', "#StudentsTable thead tr h3", sortTable);
 }
 
 function checkAllDownloads() {
@@ -239,7 +239,7 @@ function filterStudentsTableByRoom(roomId) {
 
 function sortTable(event) {
     if (students == null) return;
-    var currentElement = event.target.cellIndex == undefined ? event.target.parentElement : event.target;
+    var currentElement = event.currentTarget.parentElement;
     var currentIndex = currentElement.cellIndex;
     if (currentIndex > 1) return;
 
@@ -271,15 +271,10 @@ function sortStudentsByColumn(sortColumn, desc = false) {
         if (propertyName == "name") {
             tmpValA = a["firstName"] + a["lastName"] + a["parentName"];
             tmpValB = b["firstName"] + b["lastName"] + b["parentName"];
-
-        } else if (propertyName == "needBel") {
-            tmpValA = a[propertyName];
-            tmpValB = b[propertyName];
         } else {
             tmpValA = dictionary[propertyName + "s"][a[propertyName]];
             tmpValB = dictionary[propertyName + "s"][b[propertyName]];
         }
-
 
         if (tmpValA > tmpValB) return desc ? -1 : 1;
         if (tmpValA == tmpValB) return 0;
